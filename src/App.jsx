@@ -12,9 +12,9 @@ const SECTION_TYPES = {
 
 /* ─── Default Sections ─── */
 const makeDefaults = () => [
-  { id: uid(), title: "学歴", type: "timeline", items: [{ id: uid(), year: "", month: "", content: "" }], text: "" },
-  { id: uid(), title: "職歴", type: "timeline", items: [{ id: uid(), year: "", month: "", content: "" }], text: "" },
-  { id: uid(), title: "免許・資格", type: "timeline", items: [{ id: uid(), year: "", month: "", content: "" }], text: "" },
+  { id: uid(), title: "学歴", type: "timeline", items: [{ id: uid(), year: "", month: "", content: "", suffix: "" }], text: "" },
+  { id: uid(), title: "職歴", type: "timeline", items: [{ id: uid(), year: "", month: "", content: "", suffix: "" }], text: "" },
+  { id: uid(), title: "免許・資格", type: "timeline", items: [{ id: uid(), year: "", month: "", content: "", suffix: "" }], text: "" },
   { id: uid(), title: "志望動機", type: "text", items: [], text: "" },
   { id: uid(), title: "自己PR", type: "text", items: [], text: "" },
 ];
@@ -173,17 +173,22 @@ function formatBirthdate(year, month, day) {
 }
 
 /* ─── Timeline Editor ─── */
+const SUFFIX_OPTIONS = ["", "入学", "卒業", "卒業見込み", "修了", "修了見込み", "中退", "転入", "編入"];
+
 function TimelineEditor({ items, onChange }) {
   const update = (id, key, val) => onChange(items.map(i => i.id === id ? { ...i, [key]: val } : i));
   const remove = (id) => onChange(items.filter(i => i.id !== id));
-  const add = () => onChange([...items, { id: uid(), year: "", month: "", content: "" }]);
+  const add = () => onChange([...items, { id: uid(), year: "", month: "", content: "", suffix: "" }]);
   return (
     <div>
       {items.map(item => (
-        <div key={item.id} style={{ display: "grid", gridTemplateColumns: "68px 52px 1fr 30px", gap: "5px", marginBottom: "6px", alignItems: "center" }}>
+        <div key={item.id} style={{ display: "grid", gridTemplateColumns: "68px 52px 1fr auto 30px", gap: "5px", marginBottom: "6px", alignItems: "center" }}>
           <input style={{ ...inputStyle, padding: "7px 4px", textAlign: "center", fontSize: "13px" }} placeholder="年" value={item.year} onChange={e => update(item.id, "year", e.target.value)} />
           <input style={{ ...inputStyle, padding: "7px 4px", textAlign: "center", fontSize: "13px" }} placeholder="月" value={item.month} onChange={e => update(item.id, "month", e.target.value)} />
-          <input style={{ ...inputStyle, fontSize: "13px" }} placeholder="内容を入力" value={item.content} onChange={e => update(item.id, "content", e.target.value)} />
+          <input style={{ ...inputStyle, fontSize: "13px" }} placeholder="学校名・内容" value={item.content} onChange={e => update(item.id, "content", e.target.value)} />
+          <select value={item.suffix || ""} onChange={e => update(item.id, "suffix", e.target.value)} style={{ ...selectStyle, fontSize: "12px", padding: "7px 4px", minWidth: "80px" }}>
+            {SUFFIX_OPTIONS.map(s => <option key={s} value={s}>{s || "──"}</option>)}
+          </select>
           {items.length > 1 && (
             <button onClick={() => remove(item.id)} style={{ ...btnBase, padding: "4px", justifyContent: "center", width: "30px", height: "30px", border: "none", background: "none", color: T.danger, fontSize: "14px" }} title="削除">×</button>
           )}
@@ -237,7 +242,7 @@ function AddSectionPanel({ onAdd, onClose }) {
 
   const handleAdd = () => {
     if (!title.trim()) return;
-    onAdd({ id: uid(), title: title.trim(), type, items: type === "timeline" ? [{ id: uid(), year: "", month: "", content: "" }] : [], text: "" });
+    onAdd({ id: uid(), title: title.trim(), type, items: type === "timeline" ? [{ id: uid(), year: "", month: "", content: "", suffix: "" }] : [], text: "" });
     onClose();
   };
 
@@ -423,7 +428,7 @@ function ResumePreview({ basic, sections, contentColor }) {
                       <tr key={idx}>
                         <td style={{ ...cell, textAlign: "center", width: "50px" }}>{i.year}</td>
                         <td style={{ ...cell, textAlign: "center", width: "32px" }}>{i.month}</td>
-                        <td style={cell}><Linkify text={i.content} /></td>
+                        <td style={cell}><Linkify text={[i.content, i.suffix].filter(Boolean).join("\u3000")} /></td>
                       </tr>
                     ))}
                   </tbody>
