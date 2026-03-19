@@ -341,72 +341,69 @@ function ResumePreview({ basic, sections }) {
           </div>
           <div style={{ textAlign: "right", fontSize: "9px", color: "#666", marginBottom: "12px" }}>{dateStr}</div>
 
-          {/* ── Info table + Photo (always show photo box) ── */}
-          <div style={{ display: "flex", gap: "12px", marginBottom: "16px", alignItems: "flex-start" }}>
-            <div style={{ flex: 1 }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <tbody>
-                  {/* Name block: furigana + name, no inner border */}
-                  <tr>
-                    <td style={{ ...hCell, width: "70px", borderBottom: "none", verticalAlign: "bottom", paddingBottom: "0" }}>ふりがな</td>
-                    <td style={{ ...cell, borderBottom: "none", fontSize: "9px", color: "#666", paddingBottom: "2px", verticalAlign: "bottom" }}>{fullKana || "\u3000"}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ ...hCell, width: "70px", borderTop: "none", verticalAlign: "top", paddingTop: "0" }}>氏名</td>
-                    <td style={{ ...cell, borderTop: "none", fontSize: "15px", fontWeight: 700, padding: "4px 10px 9px" }}>{fullName || "\u3000"}</td>
-                  </tr>
+          {/* ── Info table with photo as rowspan cell ── */}
+          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "16px" }}>
+            <tbody>
+              {/* Row 1: furigana + photo (rowspan) */}
+              <tr>
+                <td style={{ ...hCell, width: "70px", borderBottom: "none", verticalAlign: "bottom", paddingBottom: "0" }}>ふりがな</td>
+                <td style={{ ...cell, borderBottom: "none", fontSize: "9px", color: "#666", paddingBottom: "2px", verticalAlign: "bottom" }}>{fullKana || "\u3000"}</td>
+                <td rowSpan={99} style={{ border, width: "32mm", verticalAlign: "top", padding: 0 }}>
+                  <div style={{
+                    width: "30mm", height: "40mm", margin: "0 auto",
+                    overflow: "hidden",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: basic.photo ? "transparent" : "#FAFAF8",
+                  }}>
+                    {basic.photo ? (
+                      <img src={basic.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    ) : (
+                      <span style={{ fontSize: "8px", color: "#BBB", textAlign: "center", lineHeight: 1.5 }}>写真</span>
+                    )}
+                  </div>
+                </td>
+              </tr>
+              {/* Row 2: name */}
+              <tr>
+                <td style={{ ...hCell, width: "70px", borderTop: "none", verticalAlign: "top", paddingTop: "0" }}>氏名</td>
+                <td style={{ ...cell, borderTop: "none", fontSize: "15px", fontWeight: 700, padding: "4px 10px 9px" }}>{fullName || "\u3000"}</td>
+              </tr>
 
-                  {/* Birthdate */}
-                  {birthdateDisplay && (
-                    <tr><td style={hCell}>生年月日</td><td style={cell}>{birthdateDisplay}</td></tr>
-                  )}
+              {/* Birthdate */}
+              {birthdateDisplay && (
+                <tr><td style={hCell}>生年月日</td><td style={cell}>{birthdateDisplay}</td></tr>
+              )}
 
-                  {/* Address block: postal + address, no inner border */}
-                  {(postalDisplay || basic.address) && (
-                    <>
-                      <tr>
-                        <td style={{ ...hCell, borderBottom: basic.address ? "none" : border, verticalAlign: "bottom", paddingBottom: basic.address ? "2px" : "7px" }}>住所</td>
-                        <td style={{ ...cell, borderBottom: basic.address ? "none" : border, fontSize: "9.5px", color: "#555", paddingBottom: basic.address ? "2px" : "7px", verticalAlign: "bottom" }}>
-                          {postalDisplay}
-                        </td>
-                      </tr>
-                      {basic.address && (
-                        <tr>
-                          <td style={{ ...hCell, borderTop: "none", paddingTop: "0" }}></td>
-                          <td style={{ ...cell, borderTop: "none", paddingTop: "2px" }}>{basic.address}</td>
-                        </tr>
-                      )}
-                    </>
-                  )}
-
-                  {/* Contact */}
+              {/* Address block: postal + address, no inner border */}
+              {(postalDisplay || basic.address) && (
+                <>
                   <tr>
-                    <td style={hCell}>連絡先</td>
-                    <td style={cell}>
-                      {basic.phone && <span>{basic.phone}</span>}
-                      {basic.phone && basic.email && <span>{"\u3000/\u3000"}</span>}
-                      {emailLink}
-                      {!basic.phone && !basic.email && "\u3000"}
+                    <td style={{ ...hCell, borderBottom: basic.address ? "none" : border, verticalAlign: "bottom", paddingBottom: basic.address ? "2px" : "7px" }}>住所</td>
+                    <td style={{ ...cell, borderBottom: basic.address ? "none" : border, fontSize: "9.5px", color: "#555", paddingBottom: basic.address ? "2px" : "7px", verticalAlign: "bottom" }}>
+                      {postalDisplay}
                     </td>
                   </tr>
-                </tbody>
-              </table>
-            </div>
-
-            {/* Photo box: always visible */}
-            <div style={{
-              width: "30mm", height: "40mm", border,
-              flexShrink: 0, overflow: "hidden",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              background: basic.photo ? "transparent" : "#FAFAF8",
-            }}>
-              {basic.photo ? (
-                <img src={basic.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              ) : (
-                <span style={{ fontSize: "8px", color: "#BBB", textAlign: "center", lineHeight: 1.5 }}>写真</span>
+                  {basic.address && (
+                    <tr>
+                      <td style={{ ...hCell, borderTop: "none", paddingTop: "0" }}></td>
+                      <td style={{ ...cell, borderTop: "none", paddingTop: "2px" }}>{basic.address}</td>
+                    </tr>
+                  )}
+                </>
               )}
-            </div>
-          </div>
+
+              {/* Contact */}
+              <tr>
+                <td style={hCell}>連絡先</td>
+                <td style={cell}>
+                  {basic.phone && <span>{basic.phone}</span>}
+                  {basic.phone && basic.email && <span>{"\u3000/\u3000"}</span>}
+                  {emailLink}
+                  {!basic.phone && !basic.email && "\u3000"}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* Dynamic sections */}
