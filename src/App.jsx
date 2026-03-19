@@ -331,11 +331,11 @@ function ResumePreview({ basic, sections, contentColor }) {
       background: contentColor || "#fff", color: "#1A1A1A",
       fontFamily: "'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif",
       fontSize: "11px", lineHeight: 1.6, boxSizing: "border-box",
-      border: "1px solid #4A4A4A",
+      outline: "1px solid #4A4A4A",
     }}>
       <style>{`
         @media print {
-          #resume-print-area { width: auto; min-height: auto; border: none; }
+          #resume-print-area { width: auto; min-height: auto; outline: none; }
           .resume-section-block { break-inside: avoid; page-break-inside: avoid; }
           .resume-page-pad { padding: ${PAD_V}mm ${PAD_H}mm; }
         }
@@ -404,8 +404,7 @@ function ResumePreview({ basic, sections, contentColor }) {
             </div>
             <div style={{
               width: "30mm", height: "40mm",
-              borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A",
-              borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A",
+              outline: "1px solid #4A4A4A",
               display: "flex", alignItems: "center", justifyContent: "center",
               background: basic.photo ? "transparent" : "#FAFAF8",
               flexShrink: 0,
@@ -580,7 +579,7 @@ export default function ResumeBuilder() {
         #resume-print-area {
           width: 210mm;
           min-height: 297mm;
-          border: none !important;
+          outline: none !important;
         }
         .resume-section-block { break-inside: avoid; page-break-inside: avoid; }
         .resume-page-pad { padding: ${PAD_V}mm ${PAD_H}mm; min-height: 297mm; }
