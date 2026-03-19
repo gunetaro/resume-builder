@@ -350,7 +350,7 @@ function ResumePreview({ basic, sections, contentColor }) {
 
           {/* ── Layout: info + photo ── */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "12px", marginBottom: "16px", alignItems: "start" }}>
-            <div>
+            <div style={{ padding: "0 1px 1px 0" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <tbody>
                   <tr>
@@ -413,7 +413,7 @@ function ResumePreview({ basic, sections, contentColor }) {
             const filled = sec.items.filter(i => i.content);
             if (!filled.length) return null;
             return (
-              <div key={sec.id} className="resume-section-block" style={{ marginBottom: "14px" }}>
+              <div key={sec.id} className="resume-section-block" style={{ marginBottom: "14px", padding: "0 1px 1px 0" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr><td colSpan={3} style={{ ...hCell, fontSize: "10.5px", letterSpacing: "0.12em", padding: "6px 10px" }}>{sec.title}</td></tr>
@@ -438,7 +438,7 @@ function ResumePreview({ basic, sections, contentColor }) {
           }
           if (!sec.text) return null;
           return (
-            <div key={sec.id} className="resume-section-block" style={{ marginBottom: "14px" }}>
+            <div key={sec.id} className="resume-section-block" style={{ marginBottom: "14px", padding: "0 1px 1px 0" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <tbody>
                   <tr>
