@@ -403,13 +403,15 @@ function ResumePreview({ basic, sections, contentColor }) {
               </table>
             </div>
             <div style={{
-              width: "30mm", height: "40mm", border: B,
-              overflow: "hidden",
+              width: "30mm", height: "40mm",
+              borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A",
+              borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A",
               display: "flex", alignItems: "center", justifyContent: "center",
               background: basic.photo ? "transparent" : "#FAFAF8",
+              flexShrink: 0,
             }}>
               {basic.photo ? (
-                <img src={basic.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={basic.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               ) : (
                 <span style={{ fontSize: "8px", color: "#BBB", textAlign: "center", lineHeight: 1.5 }}>写真</span>
               )}
