@@ -402,15 +402,19 @@ function ResumePreview({ basic, sections, contentColor }) {
                 </tbody>
               </table>
             </div>
-            <div style={{
+            <div className="photo-box" style={{
               width: "30mm", height: "40mm",
-              boxShadow: "inset 0 0 0 1px #4A4A4A",
-              position: "relative",
+              borderTop: "1px solid #4A4A4A",
+              borderBottom: "1px solid #4A4A4A",
+              borderLeft: "1px solid #4A4A4A",
+              borderRight: "1px solid #4A4A4A",
               flexShrink: 0,
+              overflow: "hidden",
               background: basic.photo ? "transparent" : "#FAFAF8",
+              boxSizing: "border-box",
             }}>
               {basic.photo ? (
-                <img src={basic.photo} alt="" style={{ position: "absolute", top: "1px", left: "1px", width: "calc(100% - 2px)", height: "calc(100% - 2px)", objectFit: "cover", display: "block" }} />
+                <img src={basic.photo} alt="" style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
                 <span style={{ display: "flex", width: "100%", height: "100%", alignItems: "center", justifyContent: "center", fontSize: "8px", color: "#BBB", textAlign: "center", lineHeight: 1.5 }}>写真</span>
               )}
@@ -583,6 +587,7 @@ export default function ResumeBuilder() {
         }
         .resume-section-block { break-inside: avoid; page-break-inside: avoid; }
         .resume-page-pad { padding: ${PAD_V}mm ${PAD_H}mm; min-height: 297mm; }
+        .photo-box { border-top: 1px solid #4A4A4A !important; border-bottom: 1px solid #4A4A4A !important; border-left: 1px solid #4A4A4A !important; border-right: 1px solid #4A4A4A !important; }
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
