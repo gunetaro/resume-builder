@@ -362,7 +362,10 @@ function ResumePreview({ basic, sections, contentColor }) {
                     <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "4px 10px 9px", fontSize: "15px", fontWeight: 700, lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{fullName || "\u3000"}</td>
                   </tr>
                   {birthdateDisplay && (
-                    <tr><td style={hCell}>生年月日</td><td style={cell}>{birthdateDisplay}</td></tr>
+                    <tr>
+                      <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}>生年月日</td>
+                      <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{birthdateDisplay}</td>
+                    </tr>
                   )}
                   {(postalDisplay || basic.address) && (
                     <>
@@ -381,8 +384,8 @@ function ResumePreview({ basic, sections, contentColor }) {
                     </>
                   )}
                   <tr>
-                    <td style={hCell}>連絡先</td>
-                    <td style={cell}>
+                    <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}>連絡先</td>
+                    <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>
                       {basic.phone && <span>{basic.phone}</span>}
                       {basic.phone && basic.email && <span>{"\u3000/\u3000"}</span>}
                       {emailLink}
