@@ -345,7 +345,7 @@ function ResumePreview({ basic, sections, contentColor }) {
 
           {/* ── Layout: info + photo ── */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "12px", marginBottom: "16px", alignItems: "start" }}>
-            <div style={{ paddingRight: "1px" }}>
+            <div>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <tbody>
                   <tr>
@@ -812,7 +812,6 @@ export default function ResumeBuilder() {
             position: "relative",
             boxShadow: "0 2px 16px rgba(0,0,0,0.10)",
             borderRadius: "3px",
-            overflow: "hidden",
             height: "fit-content",
             transform: "scale(0.78)",
             transformOrigin: "top center",
