@@ -320,13 +320,15 @@ function ResumePreview({ basic, sections, contentColor }) {
 
   return (
     <div id="resume-print-area" style={{
-      width: `${A4_W}mm`, background: contentColor || "#fff", color: "#1A1A1A",
+      width: `${A4_W}mm`, minHeight: `${A4_H}mm`,
+      background: contentColor || "#fff", color: "#1A1A1A",
       fontFamily: "'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif",
       fontSize: "11px", lineHeight: 1.6, boxSizing: "border-box",
+      border: "1px solid #4A4A4A",
     }}>
       <style>{`
         @media print {
-          #resume-print-area { width: auto; }
+          #resume-print-area { width: auto; min-height: auto; border: none; }
           .resume-section-block { break-inside: avoid; page-break-inside: avoid; }
           .resume-page-pad { padding: ${PAD_V}mm ${PAD_H}mm; }
         }
@@ -347,12 +349,12 @@ function ResumePreview({ basic, sections, contentColor }) {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <tbody>
                   <tr>
-                    <td style={{ ...hCell, width: "70px", borderBottom: "none", verticalAlign: "bottom", paddingBottom: "0" }}>ふりがな</td>
-                    <td style={{ ...cell, borderBottom: "none", fontSize: "9px", color: "#666", paddingBottom: "2px", verticalAlign: "bottom" }}>{fullKana || "\u3000"}</td>
+                    <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: "0", width: "70px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "bottom" }}>ふりがな</td>
+                    <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: "2px", fontSize: "9px", color: "#666", lineHeight: 1.55, verticalAlign: "bottom", background: "rgba(255,255,255,0.7)" }}>{fullKana || "\u3000"}</td>
                   </tr>
                   <tr>
-                    <td style={{ ...hCell, width: "70px", borderTop: "none", verticalAlign: "top", paddingTop: "0" }}>氏名</td>
-                    <td style={{ ...cell, borderTop: "none", fontSize: "15px", fontWeight: 700, padding: "4px 10px 9px" }}>{fullName || "\u3000"}</td>
+                    <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "0 10px 0", width: "70px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "top" }}>氏名</td>
+                    <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "4px 10px 9px", fontSize: "15px", fontWeight: 700, lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{fullName || "\u3000"}</td>
                   </tr>
                   {birthdateDisplay && (
                     <tr><td style={hCell}>生年月日</td><td style={cell}>{birthdateDisplay}</td></tr>
@@ -360,15 +362,15 @@ function ResumePreview({ basic, sections, contentColor }) {
                   {(postalDisplay || basic.address) && (
                     <>
                       <tr>
-                        <td style={{ ...hCell, borderBottom: basic.address ? "none" : border, verticalAlign: "bottom", paddingBottom: basic.address ? "2px" : "7px" }}>住所</td>
-                        <td style={{ ...cell, borderBottom: basic.address ? "none" : border, fontSize: "9.5px", color: "#555", paddingBottom: basic.address ? "2px" : "7px", verticalAlign: "bottom" }}>
+                        <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: basic.address ? "none" : "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: basic.address ? "2px" : "7px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "bottom" }}>住所</td>
+                        <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: basic.address ? "none" : "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: basic.address ? "2px" : "7px", fontSize: "9.5px", color: "#555", lineHeight: 1.55, verticalAlign: "bottom", background: "rgba(255,255,255,0.7)" }}>
                           {postalDisplay}
                         </td>
                       </tr>
                       {basic.address && (
                         <tr>
-                          <td style={{ ...hCell, borderTop: "none", paddingTop: "0" }}></td>
-                          <td style={{ ...cell, borderTop: "none", paddingTop: "2px" }}>{basic.address}</td>
+                          <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingTop: "0", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}></td>
+                          <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingTop: "2px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{basic.address}</td>
                         </tr>
                       )}
                     </>
@@ -545,6 +547,7 @@ export default function ResumeBuilder() {
         @page { size: A4; margin: 0; }
         body { margin: 0; padding: 0; }
         a { color: #2B4A6F; text-decoration: underline; }
+        #resume-print-area { width: 210mm; min-height: 297mm; border: none !important; }
         .resume-section-block { break-inside: avoid; page-break-inside: avoid; }
         .resume-page-pad { padding: ${PAD_V}mm ${PAD_H}mm; }
         @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
