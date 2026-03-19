@@ -310,9 +310,11 @@ function ResumePreview({ basic, sections, contentColor }) {
   const today = new Date();
   const dateStr = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日現在`;
 
-  const border = "1px solid #4A4A4A";
-  const cell = { border, padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" };
+  const B = "1px solid #4A4A4A";
+  const cell = { borderTop: "none", borderLeft: "none", borderRight: B, borderBottom: B, padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" };
   const hCell = { ...cell, background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" };
+  // For dynamic section tables: table itself provides top+left border
+  const sectionTableStyle = { width: "100%", borderCollapse: "separate", borderSpacing: 0, borderTop: B, borderLeft: B, borderRight: "none", borderBottom: "none" };
 
   const fullName = [basic.lastName, basic.firstName].filter(Boolean).join("\u3000");
   const fullKana = [basic.lastNameKana, basic.firstNameKana].filter(Boolean).join("\u3000");
@@ -350,42 +352,47 @@ function ResumePreview({ basic, sections, contentColor }) {
 
           {/* ── Layout: info + photo ── */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "12px", marginBottom: "16px", alignItems: "start" }}>
-            <div style={{ padding: "0 1px 1px 0" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <div>
+              <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0 }}>
                 <tbody>
+                  {/* Furigana: top border, no bottom */}
                   <tr>
-                    <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: "0", width: "70px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "bottom" }}>ふりがな</td>
-                    <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: "2px", fontSize: "9px", color: "#666", lineHeight: 1.55, verticalAlign: "bottom", background: "rgba(255,255,255,0.7)" }}>{fullKana || "\u3000"}</td>
+                    <td style={{ borderTop: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", borderBottom: "none", padding: "7px 10px", paddingBottom: "0", width: "70px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "bottom" }}>ふりがな</td>
+                    <td style={{ borderTop: "1px solid #4A4A4A", borderLeft: "none", borderRight: "1px solid #4A4A4A", borderBottom: "none", padding: "7px 10px", paddingBottom: "2px", fontSize: "9px", color: "#666", lineHeight: 1.55, verticalAlign: "bottom", background: "rgba(255,255,255,0.7)" }}>{fullKana || "\u3000"}</td>
                   </tr>
+                  {/* Name: no top (merged with furigana), has bottom */}
                   <tr>
-                    <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "0 10px 0", width: "70px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "top" }}>氏名</td>
-                    <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "4px 10px 9px", fontSize: "15px", fontWeight: 700, lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{fullName || "\u3000"}</td>
+                    <td style={{ borderTop: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", padding: "0 10px 9px", width: "70px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "top" }}>氏名</td>
+                    <td style={{ borderTop: "none", borderLeft: "none", borderRight: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", padding: "4px 10px 9px", fontSize: "15px", fontWeight: 700, lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{fullName || "\u3000"}</td>
                   </tr>
+                  {/* Birthdate: no top (shares name's bottom), has bottom */}
                   {birthdateDisplay && (
                     <tr>
-                      <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}>生年月日</td>
-                      <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{birthdateDisplay}</td>
+                      <td style={{ borderTop: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", padding: "7px 10px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}>生年月日</td>
+                      <td style={{ borderTop: "none", borderLeft: "none", borderRight: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{birthdateDisplay}</td>
                     </tr>
                   )}
+                  {/* Address: postal row has no bottom if address follows */}
                   {(postalDisplay || basic.address) && (
                     <>
                       <tr>
-                        <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: basic.address ? "none" : "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: basic.address ? "2px" : "7px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "bottom" }}>住所</td>
-                        <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: basic.address ? "none" : "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: basic.address ? "2px" : "7px", fontSize: "9.5px", color: "#555", lineHeight: 1.55, verticalAlign: "bottom", background: "rgba(255,255,255,0.7)" }}>
+                        <td style={{ borderTop: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", borderBottom: basic.address ? "none" : "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: basic.address ? "2px" : "7px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", verticalAlign: "bottom" }}>住所</td>
+                        <td style={{ borderTop: "none", borderLeft: "none", borderRight: "1px solid #4A4A4A", borderBottom: basic.address ? "none" : "1px solid #4A4A4A", padding: "7px 10px", paddingBottom: basic.address ? "2px" : "7px", fontSize: "9.5px", color: "#555", lineHeight: 1.55, verticalAlign: "bottom", background: "rgba(255,255,255,0.7)" }}>
                           {postalDisplay}
                         </td>
                       </tr>
                       {basic.address && (
                         <tr>
-                          <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingTop: "0", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}></td>
-                          <td style={{ borderTop: "none", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", paddingTop: "2px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{basic.address}</td>
+                          <td style={{ borderTop: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", padding: "7px 10px", paddingTop: "0", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}></td>
+                          <td style={{ borderTop: "none", borderLeft: "none", borderRight: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", padding: "7px 10px", paddingTop: "2px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>{basic.address}</td>
                         </tr>
                       )}
                     </>
                   )}
+                  {/* Contact: no top, has bottom */}
                   <tr>
-                    <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}>連絡先</td>
-                    <td style={{ borderTop: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>
+                    <td style={{ borderTop: "none", borderLeft: "1px solid #4A4A4A", borderRight: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", padding: "7px 10px", background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" }}>連絡先</td>
+                    <td style={{ borderTop: "none", borderLeft: "none", borderRight: "1px solid #4A4A4A", borderBottom: "1px solid #4A4A4A", padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" }}>
                       {basic.phone && <span>{basic.phone}</span>}
                       {basic.phone && basic.email && <span>{"\u3000/\u3000"}</span>}
                       {emailLink}
@@ -396,7 +403,7 @@ function ResumePreview({ basic, sections, contentColor }) {
               </table>
             </div>
             <div style={{
-              width: "30mm", height: "40mm", border,
+              width: "30mm", height: "40mm", border: B,
               overflow: "hidden",
               display: "flex", alignItems: "center", justifyContent: "center",
               background: basic.photo ? "transparent" : "#FAFAF8",
@@ -416,8 +423,8 @@ function ResumePreview({ basic, sections, contentColor }) {
             const filled = sec.items.filter(i => i.content);
             if (!filled.length) return null;
             return (
-              <div key={sec.id} className="resume-section-block" style={{ marginBottom: "14px", padding: "0 1px 1px 0" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <div key={sec.id} className="resume-section-block" style={{ marginBottom: "14px" }}>
+                <table style={sectionTableStyle}>
                   <thead>
                     <tr><td colSpan={3} style={{ ...hCell, fontSize: "10.5px", letterSpacing: "0.12em", padding: "6px 10px" }}>{sec.title}</td></tr>
                     <tr>
@@ -441,8 +448,8 @@ function ResumePreview({ basic, sections, contentColor }) {
           }
           if (!sec.text) return null;
           return (
-            <div key={sec.id} className="resume-section-block" style={{ marginBottom: "14px", padding: "0 1px 1px 0" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <div key={sec.id} className="resume-section-block" style={{ marginBottom: "14px" }}>
+              <table style={sectionTableStyle}>
                 <tbody>
                   <tr>
                     <td style={{ ...hCell, width: "90px" }}>{sec.title}</td>
