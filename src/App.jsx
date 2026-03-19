@@ -613,18 +613,18 @@ export default function ResumeBuilder() {
               {/* Name: split into 姓 / 名 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <Field label="姓" charCount={<CharCount value={basic.lastName} />}>
-                  <Input value={basic.lastName} onChange={setB("lastName")} placeholder="小山" />
+                  <Input value={basic.lastName} onChange={setB("lastName")} placeholder="電通" />
                 </Field>
                 <Field label="名" charCount={<CharCount value={basic.firstName} />}>
-                  <Input value={basic.firstName} onChange={setB("firstName")} placeholder="沙耶子" />
+                  <Input value={basic.firstName} onChange={setB("firstName")} placeholder="太郎" />
                 </Field>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <Field label="姓（ふりがな）" charCount={<CharCount value={basic.lastNameKana} />}>
-                  <Input value={basic.lastNameKana} onChange={setB("lastNameKana")} placeholder="おやま" />
+                  <Input value={basic.lastNameKana} onChange={setB("lastNameKana")} placeholder="でんつう" />
                 </Field>
                 <Field label="名（ふりがな）" charCount={<CharCount value={basic.firstNameKana} />}>
-                  <Input value={basic.firstNameKana} onChange={setB("firstNameKana")} placeholder="さやこ" />
+                  <Input value={basic.firstNameKana} onChange={setB("firstNameKana")} placeholder="たろう" />
                 </Field>
               </div>
 
@@ -641,7 +641,7 @@ export default function ResumeBuilder() {
               </Field>
 
               <Field label="住所" charCount={<CharCount value={basic.address} />}>
-                <Input value={basic.address} onChange={setB("address")} placeholder="東京都調布市小島町1-5-2" />
+                <Input value={basic.address} onChange={setB("address")} placeholder="東京都調布市" />
               </Field>
 
               {/* Phone with digit boxes */}
