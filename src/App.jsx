@@ -458,7 +458,8 @@ function PageOverlay({ contentRef }) {
     const obs = new ResizeObserver(() => {
       const h = contentRef.current.scrollHeight;
       const pageH = A4_H * 3.7795;
-      setPages(Math.max(1, Math.ceil(h / pageH)));
+      // Add small tolerance (5px) to avoid rounding issues with minHeight
+      setPages(Math.max(1, Math.ceil((h - 5) / pageH)));
     });
     obs.observe(contentRef.current);
     return () => obs.disconnect();
@@ -525,10 +526,21 @@ export default function ResumeBuilder() {
     if (code.length !== 7) return;
     setPostalLoading(true);
     try {
-      const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${code}`);
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        const r = data.results[0];
+      // Use JSONP to avoid CORS issues with zipcloud
+      const callbackName = "_zipCallback" + Date.now();
+      const result = await new Promise((resolve, reject) => {
+        window[callbackName] = (data) => {
+          resolve(data);
+          delete window[callbackName];
+          document.head.removeChild(script);
+        };
+        const script = document.createElement("script");
+        script.src = `https://zipcloud.ibsnet.co.jp/api/search?zipcode=${code}&callback=${callbackName}`;
+        script.onerror = () => { reject(); delete window[callbackName]; document.head.removeChild(script); };
+        document.head.appendChild(script);
+      });
+      if (result.results && result.results.length > 0) {
+        const r = result.results[0];
         setB("address")(r.address1 + r.address2 + r.address3);
       }
     } catch (e) {
@@ -544,13 +556,20 @@ export default function ResumeBuilder() {
     w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>履歴書</title>
       <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
       <style>
+        * { box-sizing: border-box; }
         @page { size: A4; margin: 0; }
-        body { margin: 0; padding: 0; }
+        html, body { margin: 0; padding: 0; width: 210mm; }
         a { color: #2B4A6F; text-decoration: underline; }
-        #resume-print-area { width: 210mm; min-height: 297mm; border: none !important; }
+        #resume-print-area {
+          width: 210mm;
+          min-height: 297mm;
+          border: none !important;
+        }
         .resume-section-block { break-inside: avoid; page-break-inside: avoid; }
-        .resume-page-pad { padding: ${PAD_V}mm ${PAD_H}mm; }
-        @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+        .resume-page-pad { padding: ${PAD_V}mm ${PAD_H}mm; min-height: 297mm; }
+        @media print {
+          body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
       </style>
     </head><body>${el.outerHTML}</body></html>`);
     w.document.close();
