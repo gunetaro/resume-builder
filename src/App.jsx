@@ -343,7 +343,7 @@ function ResumePreview({ basic, sections }) {
 
           {/* ── Info table + Photo (always show photo box) ── */}
           <div style={{ display: "flex", gap: "12px", marginBottom: "16px", alignItems: "flex-start" }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ flex: 1 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <tbody>
                   {/* Name block: furigana + name, no inner border */}
