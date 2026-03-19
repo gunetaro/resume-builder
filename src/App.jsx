@@ -23,7 +23,9 @@ const INITIAL = {
   lastName: "", firstName: "",
   lastNameKana: "", firstNameKana: "",
   email: "", phone: "", postalCode: "",
-  address: "", birthdate: "", photo: null,
+  address: "",
+  birthYear: "", birthMonth: "", birthDay: "",
+  photo: null,
 };
 
 /* ─── A4 dimensions (mm) ─── */
@@ -73,6 +75,14 @@ const inputStyle = {
   transition: "border-color 0.15s",
 };
 
+const selectStyle = {
+  ...inputStyle,
+  width: "auto",
+  paddingRight: "8px",
+  appearance: "auto",
+  cursor: "pointer",
+};
+
 const labelStyle = {
   display: "block", fontSize: "11px", fontWeight: 700, color: T.textSec,
   marginBottom: "4px", letterSpacing: "0.04em",
@@ -116,88 +126,50 @@ function Textarea({ value, onChange, placeholder, rows = 5 }) {
     onFocus={e => e.target.style.borderColor = T.accent} onBlur={e => e.target.style.borderColor = T.border} />;
 }
 
-/* ─── Digit Box Input ─── */
-function DigitBoxInput({ value, onChange, maxDigits, separator, placeholder }) {
-  // separator: index after which to show a dash (e.g. 3 for postal code "123-4567")
-  const boxW = 28;
-  const boxH = 34;
-  const gap = 3;
-  const sepW = 12;
-
-  const totalW = maxDigits * (boxW + gap) - gap + (separator ? sepW : 0);
+/* ─── Date Picker (year / month / day dropdowns) ─── */
+function DatePicker({ year, month, day, onChangeYear, onChangeMonth, onChangeDay }) {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let y = currentYear; y >= currentYear - 80; y--) years.push(y);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
   return (
-    <div style={{ position: "relative", width: `${totalW + 2}px`, height: `${boxH + 2}px` }}>
-      {/* Background boxes */}
-      <div style={{ position: "absolute", top: 0, left: 0, display: "flex", alignItems: "center", gap: `${gap}px`, pointerEvents: "none" }}>
-        {Array.from({ length: maxDigits }, (_, i) => (
-          <span key={i} style={{ display: "flex", alignItems: "center" }}>
-            {separator && i === separator && (
-              <span style={{ width: `${sepW}px`, textAlign: "center", fontSize: "16px", color: T.textTer, fontWeight: 600, lineHeight: `${boxH}px` }}>−</span>
-            )}
-            <span style={{
-              width: `${boxW}px`, height: `${boxH}px`,
-              borderRadius: "3px",
-              background: "#F5F4F1",
-              border: `1px solid ${T.borderLight}`,
-              display: "block",
-            }} />
-          </span>
-        ))}
-      </div>
-      {/* Actual input */}
-      <input
-        value={value}
-        onChange={e => {
-          // strip non-digits
-          const raw = e.target.value.replace(/[^0-9]/g, "").slice(0, maxDigits);
-          onChange(raw);
-        }}
-        placeholder={placeholder}
-        maxLength={maxDigits}
-        style={{
-          position: "absolute",
-          top: 0, left: 0,
-          width: "100%", height: "100%",
-          background: "transparent",
-          border: "none",
-          outline: "none",
-          fontSize: "16px",
-          fontFamily: "'SF Mono', 'Consolas', 'Menlo', monospace",
-          fontWeight: 600,
-          color: T.text,
-          letterSpacing: `${gap + boxW - 10}px`,
-          paddingLeft: `${(boxW - 10) / 2 + 1}px`,
-          boxSizing: "border-box",
-          caretColor: T.accent,
-        }}
-        onFocus={e => e.target.parentElement.style.outline = `2px solid ${T.accentLight}`}
-        onBlur={e => e.target.parentElement.style.outline = "none"}
-      />
+    <div style={{ display: "flex", alignItems: "center", gap: "4px", flexWrap: "wrap" }}>
+      <select value={year} onChange={e => onChangeYear(e.target.value)} style={selectStyle}>
+        <option value="">--</option>
+        {years.map(y => <option key={y} value={y}>{y}</option>)}
+      </select>
+      <span style={{ fontSize: "13px", color: T.textSec }}>年</span>
+      <select value={month} onChange={e => onChangeMonth(e.target.value)} style={selectStyle}>
+        <option value="">--</option>
+        {months.map(m => <option key={m} value={m}>{m}</option>)}
+      </select>
+      <span style={{ fontSize: "13px", color: T.textSec }}>月</span>
+      <select value={day} onChange={e => onChangeDay(e.target.value)} style={selectStyle}>
+        <option value="">--</option>
+        {days.map(d => <option key={d} value={d}>{d}</option>)}
+      </select>
+      <span style={{ fontSize: "13px", color: T.textSec }}>日</span>
     </div>
   );
 }
 
-/* ─── Formatted display for digit values ─── */
+/* ─── Format helpers ─── */
 function formatPostal(v) {
-  if (!v) return "";
-  if (v.length <= 3) return v;
-  return v.slice(0, 3) + "-" + v.slice(3);
+  const d = (v || "").replace(/[^0-9]/g, "");
+  if (!d) return "";
+  if (d.length <= 3) return d;
+  return d.slice(0, 3) + "-" + d.slice(3, 7);
 }
 
-function formatPhone(v) {
-  if (!v) return "";
-  // Simple formatting: 090-1234-5678 or 03-1234-5678
-  const d = v.replace(/[^0-9]/g, "");
-  if (d.length <= 3) return d;
-  if (d.startsWith("0") && (d[1] === "9" || d[1] === "8" || d[1] === "7")) {
-    // mobile: 090-XXXX-XXXX
-    if (d.length <= 7) return d.slice(0, 3) + "-" + d.slice(3);
-    return d.slice(0, 3) + "-" + d.slice(3, 7) + "-" + d.slice(7);
-  }
-  // landline: 0X-XXXX-XXXX or 0XX-XXX-XXXX
-  if (d.length <= 6) return d.slice(0, 2) + "-" + d.slice(2);
-  return d.slice(0, 2) + "-" + d.slice(2, 6) + "-" + d.slice(6);
+function formatBirthdate(year, month, day) {
+  if (!year && !month && !day) return "";
+  const parts = [];
+  if (year) parts.push(`${year}年`);
+  if (month) parts.push(`${month}月`);
+  if (day) parts.push(`${day}日`);
+  return parts.join("");
 }
 
 /* ─── Timeline Editor ─── */
@@ -301,7 +273,7 @@ function AddSectionPanel({ onAdd, onClose }) {
   );
 }
 
-/* ─── Linkify: detect URLs and emails ─── */
+/* ─── Linkify ─── */
 function Linkify({ text }) {
   if (!text) return null;
   const pattern = /(https?:\/\/[^\s]+)|([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g;
@@ -339,8 +311,8 @@ function ResumePreview({ basic, sections }) {
 
   const fullName = [basic.lastName, basic.firstName].filter(Boolean).join("\u3000");
   const fullKana = [basic.lastNameKana, basic.firstNameKana].filter(Boolean).join("\u3000");
-  const phoneDisplay = formatPhone(basic.phone);
   const postalDisplay = basic.postalCode ? `〒${formatPostal(basic.postalCode)}` : "";
+  const birthdateDisplay = formatBirthdate(basic.birthYear, basic.birthMonth, basic.birthDay);
 
   const emailLink = basic.email ? (
     <a href={`mailto:${basic.email}`} style={{ color: "#2B4A6F", textDecoration: "underline" }}>{basic.email}</a>
@@ -369,11 +341,12 @@ function ResumePreview({ basic, sections }) {
           </div>
           <div style={{ textAlign: "right", fontSize: "9px", color: "#666", marginBottom: "12px" }}>{dateStr}</div>
 
-          <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
-            <div style={{ flex: 1 }}>
+          {/* ── Info table + Photo (always show photo box) ── */}
+          <div style={{ display: "flex", gap: "12px", marginBottom: "16px", alignItems: "flex-start" }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <tbody>
-                  {/* ── Name block: furigana + name, no inner border ── */}
+                  {/* Name block: furigana + name, no inner border */}
                   <tr>
                     <td style={{ ...hCell, width: "70px", borderBottom: "none", verticalAlign: "bottom", paddingBottom: "0" }}>ふりがな</td>
                     <td style={{ ...cell, borderBottom: "none", fontSize: "9px", color: "#666", paddingBottom: "2px", verticalAlign: "bottom" }}>{fullKana || "\u3000"}</td>
@@ -383,12 +356,12 @@ function ResumePreview({ basic, sections }) {
                     <td style={{ ...cell, borderTop: "none", fontSize: "15px", fontWeight: 700, padding: "4px 10px 9px" }}>{fullName || "\u3000"}</td>
                   </tr>
 
-                  {/* ── Birthdate ── */}
-                  {basic.birthdate && (
-                    <tr><td style={hCell}>生年月日</td><td style={cell}>{basic.birthdate}</td></tr>
+                  {/* Birthdate */}
+                  {birthdateDisplay && (
+                    <tr><td style={hCell}>生年月日</td><td style={cell}>{birthdateDisplay}</td></tr>
                   )}
 
-                  {/* ── Address block: postal + address, no inner border ── */}
+                  {/* Address block: postal + address, no inner border */}
                   {(postalDisplay || basic.address) && (
                     <>
                       <tr>
@@ -406,24 +379,33 @@ function ResumePreview({ basic, sections }) {
                     </>
                   )}
 
-                  {/* ── Contact ── */}
+                  {/* Contact */}
                   <tr>
                     <td style={hCell}>連絡先</td>
                     <td style={cell}>
-                      {phoneDisplay && <span>{phoneDisplay}</span>}
-                      {phoneDisplay && basic.email && <span>{"\u3000/\u3000"}</span>}
+                      {basic.phone && <span>{basic.phone}</span>}
+                      {basic.phone && basic.email && <span>{"\u3000/\u3000"}</span>}
                       {emailLink}
-                      {!phoneDisplay && !basic.email && "\u3000"}
+                      {!basic.phone && !basic.email && "\u3000"}
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            {basic.photo && (
-              <div style={{ width: "30mm", height: "40mm", border, flexShrink: 0, overflow: "hidden" }}>
+
+            {/* Photo box: always visible */}
+            <div style={{
+              width: "30mm", height: "40mm", border,
+              flexShrink: 0, overflow: "hidden",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: basic.photo ? "transparent" : "#FAFAF8",
+            }}>
+              {basic.photo ? (
                 <img src={basic.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              </div>
-            )}
+              ) : (
+                <span style={{ fontSize: "8px", color: "#BBB", textAlign: "center", lineHeight: 1.5 }}>写真</span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -613,7 +595,7 @@ export default function ResumeBuilder() {
               {/* Name: split into 姓 / 名 */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <Field label="姓" charCount={<CharCount value={basic.lastName} />}>
-                  <Input value={basic.lastName} onChange={setB("lastName")} placeholder="電通" />
+                  <Input value={basic.lastName} onChange={setB("lastName")} placeholder="山田" />
                 </Field>
                 <Field label="名" charCount={<CharCount value={basic.firstName} />}>
                   <Input value={basic.firstName} onChange={setB("firstName")} placeholder="太郎" />
@@ -621,32 +603,47 @@ export default function ResumeBuilder() {
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                 <Field label="姓（ふりがな）" charCount={<CharCount value={basic.lastNameKana} />}>
-                  <Input value={basic.lastNameKana} onChange={setB("lastNameKana")} placeholder="でんつう" />
+                  <Input value={basic.lastNameKana} onChange={setB("lastNameKana")} placeholder="やまだ" />
                 </Field>
                 <Field label="名（ふりがな）" charCount={<CharCount value={basic.firstNameKana} />}>
                   <Input value={basic.firstNameKana} onChange={setB("firstNameKana")} placeholder="たろう" />
                 </Field>
               </div>
 
+              {/* Birthdate with dropdowns */}
               <Field label="生年月日">
-                <Input value={basic.birthdate} onChange={setB("birthdate")} placeholder="1999年5月6日" />
+                <DatePicker
+                  year={basic.birthYear}
+                  month={basic.birthMonth}
+                  day={basic.birthDay}
+                  onChangeYear={setB("birthYear")}
+                  onChangeMonth={setB("birthMonth")}
+                  onChangeDay={setB("birthDay")}
+                />
               </Field>
 
-              {/* Postal code with digit boxes */}
+              {/* Postal code: normal input */}
               <Field label="郵便番号">
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "15px", color: T.textSec, fontWeight: 500 }}>〒</span>
-                  <DigitBoxInput value={basic.postalCode} onChange={setB("postalCode")} maxDigits={7} separator={3} placeholder="" />
-                </div>
+                <Input
+                  value={basic.postalCode}
+                  onChange={v => setB("postalCode")(v.replace(/[^0-9\-]/g, "").slice(0, 8))}
+                  placeholder="182-0026"
+                  style={{ width: "160px" }}
+                />
               </Field>
 
               <Field label="住所" charCount={<CharCount value={basic.address} />}>
-                <Input value={basic.address} onChange={setB("address")} placeholder="東京都調布市" />
+                <Input value={basic.address} onChange={setB("address")} placeholder="東京都渋谷区..." />
               </Field>
 
-              {/* Phone with digit boxes */}
+              {/* Phone: normal input */}
               <Field label="電話番号">
-                <DigitBoxInput value={basic.phone} onChange={setB("phone")} maxDigits={11} separator={null} placeholder="" />
+                <Input
+                  value={basic.phone}
+                  onChange={v => setB("phone")(v.replace(/[^0-9\-]/g, "").slice(0, 13))}
+                  placeholder="090-1234-5678"
+                  style={{ width: "200px" }}
+                />
               </Field>
 
               <Field label="メールアドレス">
@@ -739,7 +736,7 @@ export default function ResumeBuilder() {
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 3px; }
-        input:focus, textarea:focus { border-color: ${T.accent} !important; box-shadow: 0 0 0 2px ${T.accentLight}; }
+        input:focus, textarea:focus, select:focus { border-color: ${T.accent} !important; box-shadow: 0 0 0 2px ${T.accentLight}; }
       `}</style>
     </div>
   );
