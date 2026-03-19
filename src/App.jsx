@@ -301,13 +301,13 @@ function LinkifyBlock({ text }) {
 /* ═══════════════════════════════════════════════
    Preview (A4)
    ═══════════════════════════════════════════════ */
-function ResumePreview({ basic, sections }) {
+function ResumePreview({ basic, sections, contentColor }) {
   const today = new Date();
   const dateStr = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日現在`;
 
   const border = "1px solid #4A4A4A";
-  const cell = { border, padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top" };
-  const hCell = { ...cell, background: "#F0EEE9", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap", width: "1%" };
+  const cell = { border, padding: "7px 10px", fontSize: "10.5px", lineHeight: 1.55, verticalAlign: "top", background: "rgba(255,255,255,0.7)" };
+  const hCell = { ...cell, background: "rgba(0,0,0,0.06)", fontWeight: 700, textAlign: "center", fontSize: "10px", whiteSpace: "nowrap" };
 
   const fullName = [basic.lastName, basic.firstName].filter(Boolean).join("\u3000");
   const fullKana = [basic.lastNameKana, basic.firstNameKana].filter(Boolean).join("\u3000");
@@ -320,7 +320,7 @@ function ResumePreview({ basic, sections }) {
 
   return (
     <div id="resume-print-area" style={{
-      width: `${A4_W}mm`, background: "#fff", color: "#1A1A1A",
+      width: `${A4_W}mm`, background: contentColor || "#fff", color: "#1A1A1A",
       fontFamily: "'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif",
       fontSize: "11px", lineHeight: 1.6, boxSizing: "border-box",
     }}>
@@ -341,69 +341,63 @@ function ResumePreview({ basic, sections }) {
           </div>
           <div style={{ textAlign: "right", fontSize: "9px", color: "#666", marginBottom: "12px" }}>{dateStr}</div>
 
-          {/* ── Info table with photo as rowspan cell ── */}
-          <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "16px" }}>
-            <tbody>
-              {/* Row 1: furigana + photo (rowspan) */}
-              <tr>
-                <td style={{ ...hCell, width: "70px", borderBottom: "none", verticalAlign: "bottom", paddingBottom: "0" }}>ふりがな</td>
-                <td style={{ ...cell, borderBottom: "none", fontSize: "9px", color: "#666", paddingBottom: "2px", verticalAlign: "bottom" }}>{fullKana || "\u3000"}</td>
-                <td rowSpan={99} style={{ border, width: "32mm", verticalAlign: "top", padding: 0 }}>
-                  <div style={{
-                    width: "30mm", height: "40mm", margin: "0 auto",
-                    overflow: "hidden",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    background: basic.photo ? "transparent" : "#FAFAF8",
-                  }}>
-                    {basic.photo ? (
-                      <img src={basic.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    ) : (
-                      <span style={{ fontSize: "8px", color: "#BBB", textAlign: "center", lineHeight: 1.5 }}>写真</span>
-                    )}
-                  </div>
-                </td>
-              </tr>
-              {/* Row 2: name */}
-              <tr>
-                <td style={{ ...hCell, width: "70px", borderTop: "none", verticalAlign: "top", paddingTop: "0" }}>氏名</td>
-                <td style={{ ...cell, borderTop: "none", fontSize: "15px", fontWeight: 700, padding: "4px 10px 9px" }}>{fullName || "\u3000"}</td>
-              </tr>
-
-              {/* Birthdate */}
-              {birthdateDisplay && (
-                <tr><td style={hCell}>生年月日</td><td style={cell}>{birthdateDisplay}</td></tr>
-              )}
-
-              {/* Address block: postal + address, no inner border */}
-              {(postalDisplay || basic.address) && (
-                <>
+          {/* ── Layout: info + photo ── */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "12px", marginBottom: "16px", alignItems: "start" }}>
+            <div style={{ paddingRight: "1px" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <tbody>
                   <tr>
-                    <td style={{ ...hCell, borderBottom: basic.address ? "none" : border, verticalAlign: "bottom", paddingBottom: basic.address ? "2px" : "7px" }}>住所</td>
-                    <td style={{ ...cell, borderBottom: basic.address ? "none" : border, fontSize: "9.5px", color: "#555", paddingBottom: basic.address ? "2px" : "7px", verticalAlign: "bottom" }}>
-                      {postalDisplay}
+                    <td style={{ ...hCell, width: "70px", borderBottom: "none", verticalAlign: "bottom", paddingBottom: "0" }}>ふりがな</td>
+                    <td style={{ ...cell, borderBottom: "none", fontSize: "9px", color: "#666", paddingBottom: "2px", verticalAlign: "bottom" }}>{fullKana || "\u3000"}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ ...hCell, width: "70px", borderTop: "none", verticalAlign: "top", paddingTop: "0" }}>氏名</td>
+                    <td style={{ ...cell, borderTop: "none", fontSize: "15px", fontWeight: 700, padding: "4px 10px 9px" }}>{fullName || "\u3000"}</td>
+                  </tr>
+                  {birthdateDisplay && (
+                    <tr><td style={hCell}>生年月日</td><td style={cell}>{birthdateDisplay}</td></tr>
+                  )}
+                  {(postalDisplay || basic.address) && (
+                    <>
+                      <tr>
+                        <td style={{ ...hCell, borderBottom: basic.address ? "none" : border, verticalAlign: "bottom", paddingBottom: basic.address ? "2px" : "7px" }}>住所</td>
+                        <td style={{ ...cell, borderBottom: basic.address ? "none" : border, fontSize: "9.5px", color: "#555", paddingBottom: basic.address ? "2px" : "7px", verticalAlign: "bottom" }}>
+                          {postalDisplay}
+                        </td>
+                      </tr>
+                      {basic.address && (
+                        <tr>
+                          <td style={{ ...hCell, borderTop: "none", paddingTop: "0" }}></td>
+                          <td style={{ ...cell, borderTop: "none", paddingTop: "2px" }}>{basic.address}</td>
+                        </tr>
+                      )}
+                    </>
+                  )}
+                  <tr>
+                    <td style={hCell}>連絡先</td>
+                    <td style={cell}>
+                      {basic.phone && <span>{basic.phone}</span>}
+                      {basic.phone && basic.email && <span>{"\u3000/\u3000"}</span>}
+                      {emailLink}
+                      {!basic.phone && !basic.email && "\u3000"}
                     </td>
                   </tr>
-                  {basic.address && (
-                    <tr>
-                      <td style={{ ...hCell, borderTop: "none", paddingTop: "0" }}></td>
-                      <td style={{ ...cell, borderTop: "none", paddingTop: "2px" }}>{basic.address}</td>
-                    </tr>
-                  )}
-                </>
+                </tbody>
+              </table>
+            </div>
+            <div style={{
+              width: "30mm", height: "40mm", border,
+              overflow: "hidden",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: basic.photo ? "transparent" : "#FAFAF8",
+            }}>
+              {basic.photo ? (
+                <img src={basic.photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <span style={{ fontSize: "8px", color: "#BBB", textAlign: "center", lineHeight: 1.5 }}>写真</span>
               )}
-
-              {/* Contact */}
-              <tr>
-                <td style={hCell}>連絡先</td>
-                <td style={cell}>
-                  {basic.phone && <span>{basic.phone}</span>}
-                  {basic.phone && basic.email && <span>{"\u3000/\u3000"}</span>}
-                  {emailLink}
-                  {!basic.phone && !basic.email && "\u3000"}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
 
         {/* Dynamic sections */}
@@ -491,6 +485,7 @@ export default function ResumeBuilder() {
   const [basic, setBasic] = useState(INITIAL);
   const [sections, setSections] = useState(makeDefaults);
   const [showAdd, setShowAdd] = useState(false);
+  const [contentColor, setContentColor] = useState("");
   const previewRef = useRef(null);
 
   const setB = key => val => setBasic(d => ({ ...d, [key]: val }));
@@ -522,6 +517,24 @@ export default function ResumeBuilder() {
     r.readAsDataURL(file);
   };
 
+  const [postalLoading, setPostalLoading] = useState(false);
+  const lookupPostalCode = async () => {
+    const code = (basic.postalCode || "").replace(/[^0-9]/g, "");
+    if (code.length !== 7) return;
+    setPostalLoading(true);
+    try {
+      const res = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${code}`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const r = data.results[0];
+        setB("address")(r.address1 + r.address2 + r.address3);
+      }
+    } catch (e) {
+      // silently fail
+    }
+    setPostalLoading(false);
+  };
+
   const handlePrint = () => {
     const el = document.getElementById("resume-print-area");
     if (!el) return;
@@ -542,7 +555,7 @@ export default function ResumeBuilder() {
   };
 
   const handleReset = () => {
-    if (confirm("入力内容をすべてリセットしますか？")) { setBasic(INITIAL); setSections(makeDefaults()); }
+    if (confirm("入力内容をすべてリセットしますか？")) { setBasic(INITIAL); setSections(makeDefaults()); setContentColor(""); }
   };
 
   return (
@@ -621,12 +634,26 @@ export default function ResumeBuilder() {
 
               {/* Postal code: normal input */}
               <Field label="郵便番号">
-                <Input
-                  value={basic.postalCode}
-                  onChange={v => setB("postalCode")(v.replace(/[^0-9\-]/g, "").slice(0, 8))}
-                  placeholder="182-0026"
-                  style={{ width: "160px" }}
-                />
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <Input
+                    value={basic.postalCode}
+                    onChange={v => setB("postalCode")(v.replace(/[^0-9\-]/g, "").slice(0, 8))}
+                    placeholder="150-0001"
+                    style={{ width: "140px" }}
+                  />
+                  <button
+                    onClick={lookupPostalCode}
+                    disabled={postalLoading}
+                    style={{
+                      ...btn("outline"),
+                      fontSize: "12px",
+                      padding: "8px 12px",
+                      opacity: postalLoading ? 0.5 : 1,
+                    }}
+                  >
+                    {postalLoading ? "検索中..." : "住所を自動入力"}
+                  </button>
+                </div>
               </Field>
 
               <Field label="住所" charCount={<CharCount value={basic.address} />}>
@@ -658,6 +685,57 @@ export default function ResumeBuilder() {
                   )}
                 </div>
               </Field>
+            </div>
+          </div>
+
+          {/* Color Customization */}
+          <div style={{ background: T.surface, borderRadius: T.radius, border: `1px solid ${T.borderLight}`, marginBottom: "10px", overflow: "hidden", boxShadow: T.shadow }}>
+            <div style={{ padding: "13px 16px 4px" }}>
+              <span style={{ fontWeight: 700, fontSize: "14px" }}>履歴書のカラー</span>
+            </div>
+            <div style={{ padding: "8px 16px 16px" }}>
+              <label style={labelStyle}>用紙の背景色</label>
+              <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", alignItems: "center" }}>
+                {[
+                  { label: "白", value: "" },
+                  { label: "桜", value: "#FFF0F0" },
+                  { label: "藤", value: "#F3EEFF" },
+                  { label: "空", value: "#EDF5FF" },
+                  { label: "若葉", value: "#EFFFEF" },
+                  { label: "檸檬", value: "#FFFDE8" },
+                  { label: "珊瑚", value: "#FFF3EB" },
+                ].map(c => (
+                  <button
+                    key={c.value}
+                    onClick={() => setContentColor(c.value)}
+                    style={{
+                      width: "40px", height: "40px",
+                      borderRadius: "6px",
+                      border: contentColor === c.value ? `2px solid ${T.accent}` : `1px solid ${T.border}`,
+                      background: c.value || "#fff",
+                      cursor: "pointer",
+                      position: "relative",
+                      display: "flex", alignItems: "flex-end", justifyContent: "center",
+                      padding: "0 0 3px",
+                      transition: "all 0.15s",
+                      boxShadow: contentColor === c.value ? `0 0 0 2px ${T.accentLight}` : "none",
+                    }}
+                    title={c.label}
+                  >
+                    <span style={{ fontSize: "8px", color: "#888", fontFamily: T.font, fontWeight: 600 }}>{c.label}</span>
+                  </button>
+                ))}
+                <div style={{ display: "flex", alignItems: "center", gap: "4px", marginLeft: "4px" }}>
+                  <input
+                    type="color"
+                    value={contentColor || "#ffffff"}
+                    onChange={e => setContentColor(e.target.value === "#ffffff" ? "" : e.target.value)}
+                    style={{ width: "32px", height: "32px", border: `1px solid ${T.border}`, borderRadius: "4px", cursor: "pointer", padding: "1px" }}
+                    title="カスタムカラー"
+                  />
+                  <span style={{ fontSize: "11px", color: T.textTer }}>自由選択</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -718,7 +796,7 @@ export default function ResumeBuilder() {
             transformOrigin: "top center",
           }}>
             <div ref={previewRef} style={{ position: "relative" }}>
-              <ResumePreview basic={basic} sections={sections} />
+              <ResumePreview basic={basic} sections={sections} contentColor={contentColor} />
               <PageOverlay contentRef={previewRef} />
             </div>
           </div>
